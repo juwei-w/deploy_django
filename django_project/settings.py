@@ -20,13 +20,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'x2!t%bl9lcp)psf*z@mdv(0d*1w8r8wb6o#p!xxp1tu4!+qf)i'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-default-insecure-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['192.168.0.4', 'localhost', '127.0.0.1']  # Added your IP address
-
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# ALLOWED_HOSTS=[
+#     'degree-y3-fyp-restaurant-recommendation.onrender.com', 
+#     '192.168.0.4', 
+#     'localhost', 
+#     '127.0.0.1'
+#     ]
 
 # Application definition
 
@@ -38,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'recommender',  # Add this line
+    'whitenoise.runserver_nostatic',  # For serving static files in development
 ]
 
 MIDDLEWARE = [
@@ -48,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'django_project.urls'
@@ -119,3 +126,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
